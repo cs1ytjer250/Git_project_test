@@ -1,0 +1,1092 @@
+// 栈：1.判断出栈入栈序列是否合法
+
+int Judge(char a[])		// 形参：出入栈序列数组
+{
+	int i = 0;		
+	int j = 0;		// j：入栈序列
+	int k = 0;		// k：出栈序列
+	while(a[i] != '\0')	// 当数组不为空时，进入循环
+	{
+		switch(a[i])	// 判断当前操作
+		{
+			// I：为入栈，j加1，O：为出栈k加1
+			// 每次判断完毕，都检查k是否大于j
+			case 'I': j++; break;
+			case 'O': k++;
+				// 当有一次j大于k时，则序列非法
+				if(k > j ) { printf("序列非法\n"); exit(0)}
+		}
+		i++;
+	}
+	if(j != k)		// 循环结束，判断j是否和k相等
+	{
+		printf("序列非法\n");	// 不相等，非法序列
+		return 0;
+	}
+	else
+	{
+		// 相等，合法序列
+		printf("序列合法\n");
+		return true;
+	}
+}
+
+
+// 栈：2.判断是否中心对称
+int Symmetry(LinkList L, int n)		// 形参：单链表头结点，表长
+{
+	int i;
+	char s[n/2];		// 临时数组，保存一半的链表data域
+	p = L->next;		// p: 头结点
+	for(i = 0; i < n/2; i++)	// 拷贝一半的data域到数组
+	{
+		s[i] = p->data;	
+		p = p->next;
+	}
+	i--;		// 循环结束，i越界，需要-1
+	if(n % 2 == 1)	// 判断表长的奇偶性
+		p = p->next;
+	while(p != NULL && s[i] == p->data)	// 当p不为空，且数组元素和p的data域相等时，进入循环
+	{
+		i--;		// 收缩i
+		p = p->next;	// p后移
+	}
+	if(i == -1)			// i为-1，表明对称
+		return 1;
+	else			// 否则不对称
+		return 0;
+}
+
+// 栈：3.双向存储栈
+
+typedef struct
+{
+	int stack[MaxSize];
+	int top[2];		// 两个栈顶指针
+}stk;
+stk s;
+
+int push(int i, int x)		// 形参：入栈栈号，入栈元素
+{
+	if(i < 0 || i > 1)	// 判断栈号是否合法
+	{
+		printf("栈号输入不对");
+		exit(0);
+	}
+	// 如果1号栈顶指针和2号栈顶指针相差1，则栈满
+	if(s.top[1] - s.top[0] == 1)
+	{
+		printf("栈已满\n");
+		return 0;
+	}
+	// 选择入栈栈号
+	switch(i)
+	{
+		// 栈顶指针加1，然后保存x，返回成功
+		case 0: s.stack[++s.top[0]] = x; return 1; break;
+		case 1: s.stack[--s.top[1]] = x; return 1; break;
+	}
+}
+
+// 出栈
+int pop(int i)	// 形参：出栈栈号
+{
+	if(i < 0 || i > 1)	// 判断栈号是否合法
+	{
+		printf("栈号输入错误");
+		exit(0);
+	}
+	// 选择出栈栈号
+	switch(i)
+	{	
+		// 栈中若有元素，则出栈，并将栈顶指针加1或减1
+		case 0:
+			if(s.top[0] == -1)
+			{
+				printf("栈空");
+				return -1;
+			}
+			else
+				return s.stack[s.top[0]--];
+			break;
+		case 1:
+			if(s.top[1] == MaxSize)
+			{
+				printf("栈空");
+				return -1;
+			}
+			else
+				return s.stack[s.top[1]++];
+			break;
+	}
+}
+
+
+// 栈：4.括号匹配
+bool BracketsCheck(char *str)		// 形参：括号序列数组
+{
+	InitStack(S);		// 初始化栈
+	int i = 0;			
+	while(str[i] != '\0')		// 当数组不为空，进入循环
+	{
+		switch(str[i])	// 判断当前括号
+		{
+			// 左括号，入栈
+			case '(' : Push(S, '('); break;
+			case '[' : Push(S, '['); break;
+			case '{' : Push(S, '{'); break;
+
+			// 右括号，弹出栈顶元素，并判断是否匹配。
+			// 匹配，则继续循环，否则返回匹配失败
+			case ')' : Pop(S, e);
+				if(e != '(') return false;
+				break;
+			case ']' : Pop(S, e);
+				if(e != ']') return false;
+				break;
+			case '} : Pop(S, e);
+				if(e != '}'); return false;
+				break;
+			default :
+				break;
+		}
+		i++;
+	}
+	// 如果栈不为空，则同样匹配失败
+	if(!IsEmpty(S))
+	{
+		printf("括号不匹配");
+		return false;
+	}
+	else	// 循环结束，栈空，匹配成功
+	{
+		printf("括号匹配！");
+		return false;
+	}
+}
+
+
+// 栈：5.火车座位调整
+void Train_Arrange(char *train)	// 形参：火车序列数组
+{
+	// p：临时数组，q：火车序列，c：临时变量
+	char *p = train, *q = train, c;
+	stack s;		// 声明栈空间
+	InitStack(S);	// 初始化栈
+	while(*p)		// 当有火车时，进入循环
+	{
+		if(*p == 'H')	// 如果为硬座，则入栈
+			Push(S, *p);
+		else		// 软座则，添加到q序列
+			*(q++) = *p;
+		p++;		// p右移
+	}
+	// 当栈不为空时，进入循环
+	while(!StackEmpty(s))
+	{
+		Pop(s, c);		// 出栈，并添加到q的末尾。
+		*(q++) = c;
+	}
+}
+
+
+
+// 栈：6.函数计算
+
+double p(int n, double x)		// 形参：计算深度，x值
+{
+	struct stack
+	{
+		int no;
+		double val;
+	}st[MaxSize];
+	int top = -1, i;	
+	double fv1 = 1, fv2 = 2 * x;	// 初始fv1=1，fv2=2；
+	for(i = n; i >= 2; i--)	// 计算深度大于等于2，将i入栈保存在no域
+	{
+		top++;	// 栈顶加1
+		st[top].no = i;	// 保存i到no域
+	}
+	while(top >= 0)	// 当栈顶不为空
+	{
+		// 计算当前栈顶的值
+		st[top].val = 2 * x * fv2 - 2 * (st[top].no - 1) * fv1;
+		fv1 = fv2;		// fv1更新为fv2
+		fv2 = st[top].val;	// fv2更新为栈顶值
+		top--;		// 退栈
+	}
+	if(n == 0)
+		return fv1;
+	return fv2;		// fv2即为所求函数结果
+}
+
+
+// 队列：1.调整循环队列
+int EnQueue1(SqQueue &Q, int x)	// 形参：队列指针，入队元素x
+{
+	if(Q.front == Q.rear && Q.tag == 1)	// 判满
+	{
+		return 0;
+	}
+	Q.data[Q.rear] = x;
+	Q.rear = (Q.rear + 1) % MaxSize;
+	Q.tag = 1;
+	return 1;
+}
+
+int DeQueue(SqQueue &Q, int &x)	// 形参：队列指针，出队元素
+{
+	if(Q.front == Q.rear && Q.tag == 0)	// 判空
+		return 0;
+	x = Q.data[Q.front];
+	Q.front = (Q.front + 1) % MaxSize;
+	Q.tag = 0;
+	return 1;
+}
+
+
+
+// 队列：2.使用队列和栈实现逆置
+void Inverse(Stack &S, Queue &Q)
+{
+	while(!QueueEmpty(Q))
+	{
+		x = DeQueue(Q);
+		Push(S, x);
+	}
+	while(!StackEmpty(S))
+	{
+		Pop(S, x);
+		EnQueue(Q, x);
+	}
+}
+
+
+
+// 队列：3.使用两个栈模拟队列
+int EnQueue(Stack &S1, Stack &S2, int e)	// 形参：栈1、2指针，元素e
+{
+	if(!StackOverflow(S1))	// 栈1未溢出，入栈到栈1，完成入队
+	{
+		Push(S1, e);
+		return 1;
+	}
+	// 如果栈1溢出，且栈2不为空，则队列满
+	if(StackOverflow(S1) && !StackEmpty(S2))
+	{
+		printf("队列满");
+		return 0;
+	}
+	// 如果栈1溢出，且栈2为空
+	if(StackOverflow(S1) && StackEmpty(S2))
+	{
+		// 将栈1入栈到栈2
+		while(!StackEmpty(S1))
+		{
+			Pop(S1, e);
+			Push(S2, e);
+		}
+	}
+	// 入队
+	Push(S1, e);
+	return 1;
+}
+
+
+int DeQueue(Stack &S1, Stack &S2, int &e)	// 形参：栈1、2指针，元素e
+{
+	if(!StackEmpty(S2))		// 栈2未溢出，出队
+	{
+		Pop(S2, e);
+	}
+	else if(StackEmpty(S1))	// 栈1为空，队列空。
+	{
+		printf("队列为空");
+	}
+	else		// 当栈1不空，栈2为空时，将栈1入栈到栈2
+	{
+		while(!StackEmpty(S1))
+		{
+			Pop(S1, e);
+			Push(S2, e);
+		}
+	}
+	// 出队
+	Pop(S2, e);
+}
+
+
+// 队列判空
+int QueueEmpty(Stack S1, Stack S2)	// 形参：两个栈的指针
+{
+	if(StackEmpty(S1) && StackEmpty(S2))	// 两个栈都为空，则队列为空
+		return 1;
+	else
+		 return 0;
+}
+
+
+
+// 队列：4.渡船调度
+
+Queue Q1; // 渡船队列
+Queue Q2; // 客船队列
+Queue Q3; // 货船队列
+void Manager()		// 形参：为空
+{
+	int i = 0, j = 0;	// i：客船数量，j：渡船数量
+	while(j < 10)
+	{
+		// 当客船队列不空，且i小于4，出队客船，i和j加1
+		if(!QueueEmpty(q1) && i < 4)
+		{
+			DeQueue(q1, x);
+			EnQueue(q, x);
+			i++;
+			j++;
+		}
+		// 当i等于4，且货船队列不空，出队货船，重置i，j加1
+		else if(i == 4 && !QueueEmpty(Q2))
+		{
+			DeQueue(q2, x);
+			EnQueue(q, x);
+			j++;
+			i = 0;
+		}
+
+		// 当j小于10，且i小于4，再次出队货船队列
+		else
+		{
+			while(j < 10 && i < 4 && !QueueEmpty(q2))
+			{
+				DeQueue(q2, x);
+				EnQueue(q, x);
+				j++;
+			}
+			i = 0;
+		}
+
+		// 当客船和货船队列都为空时，退出循环，渡船渡河。
+		if(QueueEmpty(q1) && QueueEmpty(q2))
+			j = 11;
+	}
+}
+
+
+
+// 树：1.后序遍历二叉树的非递归算法
+
+void PostOrder(BiTree T)		// 形参：二叉树根节点
+{
+	InitStack(S);		// 初始化栈
+	p = T;			// p：根节点
+	r = NULL;			// r：临时指针，保存已访问过的节点
+	while(p || !IsEmpty(S))	// 当p不为空，或栈不空，进入循环
+	{
+		// 该判断会把所有根节点入栈，并将p移到最左下
+		if(p)		// p不为空，入栈p，并把p移到左孩子
+		{
+			push(S, p);
+			p = p->lchild;
+		}
+		// 该判断会判断节点是否有右孩子，并把p移到最右下
+		// 如果没有右孩子，则输出该节点，并弹出栈顶。
+		else
+		{
+			// 用p接收栈顶元素
+			GetTop(S, p);
+			// 判断p是否有右孩子，如果右则移到右孩子
+			if(p->rchild && p->rchild != r)
+			{
+				p = p->rchild;
+			}
+			// 没有右孩子，弹出栈顶元素，并打印，用r保存p
+			// 并将p置空，保证再次保存栈顶元素。
+			else
+			{
+				pop(S, p);
+				visit(p->data);
+				r = p;
+				p = NULL;
+			}
+		}
+	}
+}
+
+
+
+// 树：2.逆向层序遍历
+void InvertLevel(BiTree bt)		// 形参：根节点
+{
+	Stack s, Queue q;		// 声明栈和队列
+	if(bt != NULL)		// 根节点不空，进入条件判断
+	{
+		InitStack(s);	// 初始化队列和栈
+		InitQueue(q);
+		EnQueue(q, bt);	// 入队根节点
+		while(IsEmpty(q) == false)	// 当队列不空，进入循环
+		{
+			DeQueue(q, p);	// 出队队头节点
+			Push(s, p);	// 入栈队头节点
+			// 入队队头节点的左右孩子
+			if(p->lchild)
+				EnQueue(q, p->lchild);
+			if(p->rchild)
+				EnQueue(q, p->rchild);
+		}
+		// 当栈不空时，出栈，并输出栈顶元素。
+		while(IsEmpty(s) == false)
+		{
+			Pop(s, p);
+			visit(p->data);
+		}
+	}
+}
+
+
+
+// 树：3.求二叉树高度，非递归
+
+int Btdepth(BiTree T)		// 形参：根节点
+{
+	if(!T)			// 判断是否为空树
+		return 0;
+	int front = -1, rear = -1;	// 创建一个队列
+	int last = 0, level = 0;         // last：当前层所有孩子的数量，level：层级
+	BiTree Q[MaxSize];
+	Q[++rear] = T;		// 根节点入队
+	BiTree p;
+	while(front < rear)		// 当front小于rear，进入循环
+	{
+		p = Q[++front];	// 出队队头节点
+		if(p->lchild)	// 如果队头节点有左右孩子，则将其入队
+			Q[++rear] = p->lchild;
+		if(p->rchild)
+			Q[++rear] = p->rchild;
+		if(front == last)   // 如果front等于last，则level加1，更新last
+		{
+			level++;
+			last = rear;
+		}
+	}
+	return level;		// 返回层级
+}
+
+// 解法2：递归
+
+int Btdepth2(BiTree T)		// 形参：根节点
+{
+	if(T == NULL)		// 根节点不为空，进入递归
+		return 0;
+	ldep = BtDepth2(T->lchild);	// 左子树高度
+	rdep = BtDepth2(T->rchild);	// 右子树高度
+	if(ldep > rdep)		// 左右子树，更高的一方加1，并返回。
+		return ldep + 1;
+	else
+		return rdep + 1;
+}
+
+
+
+// 树：4.通过先序和后序，构建二叉树
+
+BiTree PreInCreat(char a[], char b[], int l1, int h1, int l2, int h2)
+// 形参：先序数组，中序数组，先序其实下标，先序结束下标，中序起始**，中序结束**
+{
+	root = (BiTNode *)malloc(sizeof(BiTNode));	// 声明根节点
+	root->data = a[l1];		// 根节点为先序序列的第一个节点
+	for(i = l2; b[i] = ! root->data; i++);	// 找到根节点所在中序的位置
+	llen = i - l2;			// 计算左子树数量
+	rlen = h2 - i;			// 右子树数量
+	
+	// 当左子树数量不为0，进入递归
+	if(llen)
+	{
+// 递归参数：（先序，中序，先序起始右移一位，先序起始加llen，中序起始，中序起始加llen-1）
+// 构建范围为先序数组起始下标右移一位（跳过根节点），到先序数组的l1加llen的位置
+// 中序数组：l2到l2加llen - 1（提过根节点）
+// 不停的递归调用这个范围构建左子树。
+		root->lchild = PreInCreat(a, b, l1+1, l1 + llen, l2, l2+llen-1);
+	}
+
+	// 构建完毕，将叶子节点的左孩子置空
+	else
+	{
+		root->lchild = NULL;
+	}
+	
+	// 当右子树数量不为0，进入递归
+	if(rlen)
+	{
+// 构建范围为：先序的h1-rlen（结束下标减右子树的数量），到结束下标
+// 中序：结束下标h2-rlen + 1（跳过根节点），到结束下标
+// 递归调用该范围，构建右子树。
+		root->rchild = PreInCreat(a, b, h1-rlen, h1, h2-rlen+1, h2);
+	}
+
+	// 构建完毕，将叶子节点的右孩子置空
+	else
+	{
+		root->rchild = NULL;
+	}
+	return root;	// 返回根节点
+}
+
+
+
+// 树：5.判断二叉链表是否是完全二叉树
+bool IsComplete(BiTree T)		// 形参：根节点
+{
+	InitQueue(Q);		// 初始化队列，并将根节点入队
+	if(!T)		// 判断树是否为空
+		return 1;
+	EnQueue(Q, T);
+	while(!IsEmpty(Q))	// 当队列不空时，进入循环
+	{
+		DeQueue(Q, p);	// 出队队头节点
+		if(p)		// 如果队头节点不为空，则将左右孩子如果
+		{
+			EnQueue(Q, p->lchild);
+			EnQueue(Q, p->rchild);
+		}
+		else		// 如果为空，进入循环判断。
+		{
+			// 如果出队的元素，不为空则该数不是完全二叉树。
+			while(!IsEmpty(Q))
+			{
+				DeQueue(Q, p);
+				if(p)
+					return 0;
+			}
+		}
+	}
+}
+
+
+
+// 树:6.计算二叉链表所有双分支个数
+
+int DsonNodes(BiTree b)		// 形参：根节点
+{
+	if(b == NULL)		// 根节点为空，返回0
+		return 0;
+	// 如果为叶子节点，返回左孩子和右孩子相加再加1
+	else if(b->lchild != NULL && b->rchild != NULL)
+		return DsonNodes(b->lchild) + DsonNodes(b->rchild) + 1;
+	else	// 不是叶节点，返回左孩子和右孩子相加
+		return DsonNodes(b->lchild) + DsonNodes(b->rchild);
+}
+
+
+
+// 树：7.交换左右孩子
+void swap(BiTree p)		// 形参：根节点
+{
+	if(b)		// 如果根节点不为空，进入递归
+	{
+		swap(b->lchild);	// 交换左子树
+		swap(b->rchild);	// 交换右子树
+
+		// 交换逻辑
+		temp = b->lchild;	
+		b->lchild = b->rchild;
+		b->rchild = temp;
+	}
+}
+
+
+
+// 树：8.先序遍历中第k个节点
+
+int i = 1;				// 全局变量i
+int PreNode(BiTree b, int k)		// 形参：根节点，k
+{
+	if(b == NULL)		// 节点为空，返回特定字符
+		return '#';
+	if(i == k)			// i值和k相等，返回该节点的data域
+		return b->data;
+	i++;			// 每调用过一个节点，i加1
+	ch = PreNode(b->lchild, k);	// 递归左子树
+	if(ch != '#')		// 如果返回的结果不是data域，则表明未找到
+		return ch;
+	ch = PreNode(b->rchild, k)	// 开始递归右子树
+		return ch;
+}
+
+
+
+// 树：9.删去以X为根的节点
+
+// 删除函数
+void DeleteXTree(BiTree &bt)
+{
+	if(bt)	// 当节点不为空，先走到该节点的最下层，开始一层一层向上删除
+	{
+		DeleteXTree(bt->lchild);
+		DeleteXTree(bt->rchild);
+		free(bt);
+	}
+}
+
+void Search(BiTree bt, int x)	// 形参：根节点，X
+{
+	BiTree Q[];	// 声明队列
+	if(bt)		// 当根节点不空，开始进入递归
+	{
+		// 如果根节点恰好是所求节点，直接调用删除
+		if(bt->data == x)
+		{
+			DeleteXTree(bt);
+			exit(0);
+		}
+
+		// 初始化队列，并将根节点入队
+		InitQueue(Q);
+		EnQueue(Q, bt);
+
+		// 当队列不空时，进入循环扫描
+		while(!IsEmpty(Q))
+		{
+			DeQueue(Q, p);	// 队头元素出队
+			if(p->lchild)	// 队头元素有左孩子
+			{
+				// 先判断左孩子是否是所求节点
+				if(p->lchild->data == x)
+				{
+					DeleteXTree(p->lchild);
+					// 当删除完毕后，将左孩子置空
+					p->lchild = NULL；
+				}
+				// 不是所求节点继续往下。
+				else
+				{
+					EnQueue(Q, p->lchild);
+				}
+			}
+			
+			// 和左孩子相同。
+			if(p->rchild)
+			{
+				if(p->rchild->data == x)
+				{
+					DeleteXTree(p->rchild);
+					p->rchild == NULL;
+				}
+				else
+				{
+					EnQueue(Q, p->rchild);
+				}
+			}
+		}
+	}
+}
+
+
+
+
+// 树：10.查找x，并输出它的祖先
+
+void Search(BiTree bt, int x)		// 形参：根节点，x
+{
+	stack s[];			// 声明栈
+	top = 0;
+	while(bt != NULL || top > 0)	// 根基节点不为空，或栈不为空
+	{
+		while(bt != NULL && bt->data != x)	// 节点的data域不等于X，入栈，并向下走。
+		{
+			s[++top].t = bt;
+			s[top].tag = 0;
+			bt = bt->lchild;
+		}
+		// 找到了X节点，输出栈中所有元素。
+		if(bt != NULL && bt->data == x)
+		{
+			printf("所查节点的所有祖先节点的值为：\n");
+			// 这里输出栈中节点，是从栈底开始的，有点没想明白
+			for(i = 1; i <= top; i++)
+			{
+				printf("%d", s[i].t->data);
+				exit(1);
+			}
+		}
+		// 当左右子树都被访问过时，开始往回走
+		while(top != 0 && s[top].tag == 1)
+			top--;
+		// 访问右子树。
+		if(top != 0)
+		{
+			s[top].tag = 1;
+			bt = s[top].t->rchild;
+		}
+	}
+}
+
+
+
+
+// 树：11.找到公共节点
+
+BiTree Ancestor(BiTree ROOT, BiTNode *p, BiTNode *q)	// 形参：根节点，p，q
+{
+	top = 0; bt = ROOT;		// top：栈顶指针
+	while(bt != NULL || top > 0)	// bt不为空，top不为0，进入循环
+	{
+		while(bt != NULL)	// 将根节点的左子树入栈
+		{
+			s[++top].t = bt;
+			s[top].tag = 0;
+			bt = bt->lchild;
+		}
+
+		// 如果左右子树都被访问过，且top不为0，进入循环判断
+		while(top != 0 && s[top].tag == 1)
+		{
+			// 找到p（这里默认p在q的左侧）
+			if(s[top].t == p)
+			{
+			// 将目前栈中所有元素拷贝到栈2，且一起拷贝栈顶指针
+				for(i = 1; i <= top; i++)
+				{
+					s1[i] = s[i];
+					top1 = top;
+				}
+			}
+
+			// 找到q，两层循环查找公共节点
+			if(s[top].t == q)
+			{
+				// 第一层循环，从目前栈顶开始往回查找
+				for(i = top; i > 0; i--)
+				{
+				// 第二层循环，从拷贝指针开始往回查找
+					for(j = top1; j > 0; j--)
+					{
+				// 当i和j相遇，则该节点则为公共节点，返回
+						if(s1[j].t == s[i].t)
+							return s[i].t
+					}
+				}
+			}
+			// 如果q和p都每找到，则栈顶指针减1
+			top--;
+		}
+		// 入栈右子树
+		if(top != 0)
+		{
+			s[top].tag = 1;
+			bt = s[top].t->rchild;
+		}
+	}
+	return NULL;
+}
+
+
+
+// 树：12.求宽度
+
+int BTWidth(BiTree b)		// 形参：根节点
+{
+	BiTree p;
+	int k, max, i, n;	// k：层级，max：最大宽度，i，n：临时指针
+	Qu.front = Qu.rear = -1;	// 初始化队头指针和队尾指针
+	Qu.rear++;		
+	Qu.data[Qu.rear] = b;	// 根节点入队
+	Qu.level[Qu.rear] = 1;	// 将根节点所在层级改为1
+	while(Qu.front < Qu.rear)	// 当队尾指针大于队头指针时，进入循环
+	{
+		Qu.front++;	// 出队队头节点
+		p = Qu.data[Qu.front];
+		k = Qu.level[Qu.front];	// 更新k为当前节点层级	
+
+// 将队头节点的左右孩子入队，并将层级加1，循环结束，会将所有节点入队
+		if(p->lchild != NULL)
+		{
+			Qu.rear++;
+			Qu.data[Qu.rear] = p->lchild;
+			Qu.level[Qu.rear] = k + 1;
+		}
+		if(p->rchild != NULL)
+		{
+			Qu.rear++;
+			Qu.data[Qu.rear] = p->rchild;
+			Qu.level[Qu.rear] = k + 1;
+		} 
+	}
+
+
+	max = 0; i = 0;
+	k = 1;
+	
+	// 计算宽度
+	while(i <= Qu.rear)
+	{
+		n = 0;	// 初始n为0.
+		// 当i小于队尾指针，且节点的层级和k相等
+		while(i <= Qu.rear && Qu.level[i] == k)
+		{
+			// 计算当前层的节点数，i不停向后扫描
+			n++;
+			i++;
+		}
+		// 每层扫描完毕，更新k为下一层层级
+		k = Qu.level[i];
+		// 对比n和max大小，并用max保存较大值
+		if(n > max) max = n;
+	}
+	// 循环结束，最后max的值即为所求宽度。
+	return max;
+}
+
+
+
+// 树：13.通过满二叉树的前序，求其后序
+
+void PreToPost(char pre[], int l1, int h1, int post[], int l2, int h2)
+// 形参：先序序列，起始下标，结束下标，后序序列，起始下标，结束下标
+{
+	int half;	// 中间下标
+	if(h1 >= l1)
+	{
+		post[h2] = pre[l1];	// 先序的第一个节点，即为后序的最后一个节点
+		// 计算中间下标
+		half = (h1 - l1) / 2;
+		
+// 递归构建左半部分，先序从l1+1到l1+half，后序从l2到l2+half-1（加1减1跳过已构建的根节点）
+		PreToPost(pre, l1 + 1, l1 + half, post, l2, l2 + half - 1);
+
+// 递归构建右半部分，先序从l1+half+1到h1，后序从l2+half到h2-1
+		PreToPost(pre, l1 + half + 1, h1, post, l2 + half, h2 -1);
+	}
+}
+
+
+
+// 树：14.将二叉树叶节点连成单链表
+
+LinkList InOrder(BiTree bt)	// 形参：根节点
+{
+	if(bt)		// 根节点不为空，进入递归
+	{
+		InOrder(bt->lchild);		// 递归来到最左下叶节点
+		if(bt->lchild == NULL && bt->rchild == NULL)
+		{
+			// 如果是第一个节点，则将head和pre指向该节点
+			if(pre == NULL)
+			{
+				head = bt;
+				pre = bt;
+			}
+
+// 不是第一个节点，则将pre（前驱）的右孩子指向当前节点，并将pre移到当前几点
+			else
+			{
+				pre->rchild = bt;
+				pre = bt;
+			}
+		}
+		// 向右兄弟移动
+		InOrder(bt->rchild);
+		// 最后将右孩子置空
+		pre->rchild = NULL;
+	}
+	// 返回头节点
+	return head;
+}
+
+
+
+// 树：15.判断两颗二叉树是否相似
+
+int similar(BiTree T1, BiTree T2)	// 形参：两树的根节点
+{
+	int leftS, rightS;		// leftS：左相似标志，rightS：右标志相似
+
+	// 当根节点为空时，相似
+	if(T1 == NULL && T2 == NULL)
+		return 1;
+
+	// 只有一边为空，不相似
+	else if(T1 == NULL || T2== NULL)
+		return 0;
+
+	// 通过上面条件，进入递归排查，递归结束时，如果左右标志为1，则相似。
+	else
+	{
+		leftS = similar(T1->lchild, T2->lrchild);
+		rightS = similar(T1->rchidl, T2->rchild);
+		return leftS && rightS;
+	}
+}
+
+
+
+// 树：16.查找线索二叉树的后序前驱
+BiThrTree InPostPre(BiThrTree t, BiThrTree p)	// 形参：根节点，p
+{
+	BiThrTree q;	// q即为p的前驱
+	if(p->rtag == 0)	// 如果p有右孩子，则前驱就是右孩子
+		q = p->rchild;
+	else if(p->ltag == 0)	// 没有右孩子，有左孩子，前驱为左孩子
+		q = p->lchild;
+	else if(p->lchild == NULL)    // 没有左右孩子，切左右标志为1，则前驱为空
+		q = NULL;
+	else
+	{
+// 当左右标志为1，且左孩子不为空，则一直向前扫描，直到找到一个有左孩子的节点，这个左孩子就是p的前驱。否则，前驱为空。
+		while(p->ltag == 1 && p->lchild != NULL)
+		{
+			p = p->lchild;
+		}
+		if(p->ltag == 0)
+			q = p->lchild;
+		else
+			q = NULL;
+	}
+	return q;
+}
+
+
+
+// 树：17.求二叉链表的带权路径长度（wpl）
+int WPL(BiTree root)		// 形参：头结点
+{
+	// 该函数为算法入口。
+	return wpl_PreOrder(root, 0)
+}
+int wpl_PreOrder(BiTree root, int deep)	// 形参：头结点，路径长度
+{
+	static int wpl = 0;		// 静态变量，保存路径长度
+
+	// 计算叶节点的路径长度，当前节点的权值*路径长度
+	if(root->lchild == NULL && root->rchild == NULL)
+		wpl += deep * root->weight;
+
+	// 节点有左孩子，则进入下一层递归，同时路径长度加1
+	if(root->lchild != NULL)
+		wpl_PreOrder(root->lchild, deep + 1);
+
+	// 有右孩子。
+	if(root->rchild != NULL)
+		wpl_PreOrder(root->rchild, deep + 1);
+	return wpl;
+}
+
+
+
+// 树：18.将表达式树，转换为对应的表达式
+
+void BtreeToE(BTree *root)		// 形参：根节点
+{
+	BtreeToExp(root, 1);		// 算法入口
+}
+
+void BtreeToExp(BTree *root, int deep)	// 形参：根节点，路径长度
+{
+	if(root == NULL) return;	// 根节点为空，返回
+
+	// 每当第二次路过一个节点时，输出该节点的data域
+	else if(root->left == NULL && root->right == NULL)
+		printf("%s", root->data);
+
+	// 递归进入左右子树
+	else
+	{
+	// 当一个节点所处深度大于1，则为该节点和其所有子树加上括号
+		if(deep > 1) printf("(");
+
+		// 递归来到左孩子，每一次路径长度加1
+		BtreeToExp(root->left, deep +1);
+
+		// 输出根节点的data域
+		printf("%s", root->data);
+
+		// 递归来到右孩子，路径长度加1
+		BtreeToExp(root->right, deep + 1);
+
+// 一个节点的左右孩子都被访问过后，如果该节点路径长度大于1，则加上右括号
+		if(deep > 1) printf(")");
+	}
+}
+
+
+
+// 树：19.求孩子兄弟表示存储的叶子节点数
+
+typedef struct node
+{
+	int data;
+	struct node *fch, *nsib;
+}*Tree;
+
+int Leaves(Tree t)		// 形参：根节点
+{
+	if(t == NULL)	// 节点为空时，返回
+		return 0;
+	if(t->fch == NULL)	// 当来到叶节点时，递归扫描右兄弟，同时加1
+		return 1 + Leaves(t->nsib);
+	else		// 不是叶节点，则一直向下递归。
+		return Leaves(t->fch) + Leaves(t->nsib);
+}
+
+
+
+// 树：20.求孩子兄弟表示法的树深度
+int Height(CSTree bt)		// 形参：根节点
+{
+	int hc, hs;			// 记录左孩子和右兄弟的深度
+	if(bt == NULL)		// 节点为空，返回
+		return 0;
+	else			// 否则，递归的向下扫描左孩子和右兄弟
+	{
+		hc = Height(bt->firstchild);
+		hs = Height(bt->nextsibling);
+
+// 比较两个变量的大小，如果左孩子加1大于右兄弟，则返回左孩子加1，否则返回右兄弟
+		if(hc + 1 > hs)
+			return hc + 1;
+		else
+			return hs;
+	}
+}
+
+
+
+// 树：21.根据层序和度，构建孩子兄弟链表
+
+// 形参：根节点，层序遍历，度数组，数组长度
+void createCSTree_Degree(CSTree &T, char e[], int degree[], int n )
+{
+	// 开辟一片空间，并用pointer指向首地址。
+	CSNode *pointer = new CSNode[maxNodes];
+	// d:保存当前节点的度
+	int i, j, d, k = 0;
+
+	// 将层序序列全部保存到pointer，并将左孩子右兄弟置空。
+	for(i = 0; i < n; i++)
+	{
+		pointer[i]->data = e[i];
+		pointer[i]->lchild = pointer[i]->rsibling = NULL;
+	}
+
+	// 根据度，开始链接左孩子和右兄弟
+	for(i = 0; i < n; i ++)
+	{
+		d = degree[i];	// 每一次都更新当前节点的度
+		if(d)		// 度不为0，进入链接
+		{
+			k++;	// k开始扫描每一个节点
+			// 用根节点链接左孩子
+			pointer[i]->lchild = pointer[k];
+
+	// 当度大于1时，链接右兄弟，右兄弟在左孩子的下一个下标位置k+1
+			for(j = 2; j <= d; j++)
+			{
+				k++;
+				pointer[k-1]->rsibling = pointer[k];
+			}
+		}
+	}
+	// 保存头结点，并回收pointer
+	T = pointer[0];
+	delete[] pointer;
+}

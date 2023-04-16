@@ -1,0 +1,452 @@
+// 链表：1.递归删除所有值为x的节点
+
+bool Del_x_3(LinkList &L, int x)	// 形参：单链表头结点，X值
+{
+	LNode *p;		// 临时指针p
+	if(L == NULL)		// 判断单链表是否合法
+		return false;
+	if(L->data == x)		// 当遇到和X相同的元素
+	{
+		p = L;		// 临时指针p指向工作指针L
+		L = L->next;	// 工作指针后移
+		free(p);		// 释放p指针的内存空间
+		Del_x_3(L, x);	// 递归调用自身，参数为下一个节点
+	}
+	else			// 和X不相等
+	{
+		Del_x_1(L->next, x)	// 调用自身，参数为下一个节点
+	}
+	return true;		// 递归结束,返回真
+}
+
+
+
+// 链表：2.删除所有值为x的节点
+
+// 解法1：
+void Del_x_4(LinkList &L, int x)		// 形参：单链表头结点，X
+{
+	LNode *p, *pre，*q;	        // 声明工作指针p，p的前驱pre，临时指针q
+	pre = L;			// 初始化前驱指针为头结点
+	p = pre->next;		// p为第一个节点
+	if(L->next == NULL)	// 判断单链表是否合法
+		return;
+	while(p != NULL)		// 当p不为空时进入循环
+	{
+		if(p->data == x)	// 当p的data域和X相等
+		{
+			q = p;	// 用临时指针q，指向p。
+			p = p->next;	// p移到后继节点
+			pre->next = p;	// 前驱节点pre指向p（当前的p指针指向的是，前驱节点pre后继的后继）
+			free(q);	// 释放q指针的内存空间
+		}
+		else	// 当data域和X不相等
+		{
+			// 前驱和后继同时后移
+			pre = p;
+			p = p->next;
+		}
+	}
+}
+
+// 解法2： 
+// 采用尾插法思路
+void Del_x_2(LinkList &L, int x)		// 形参：单链表头结点，X
+{
+	LNode *p = L->next, *r = L, *q; // 声明工作指针p：初始指向第一个节点，r为p节点前驱，临时指针q
+	while(p != NULL)		// 当p不为空时，进入循环
+	{
+		if(p->data != x)	// 当p的data域和X不相等
+		{
+			r->next = p;	// 前驱指针r的后继指向p
+			r = p;		// 前驱指针r移到后继节点p
+			p = p->next;	// p移向后继节点
+		}
+		else		// data域和X相等
+		{
+			q = p;	// 用q保存当前p指针
+			p = p->next;	// p移到后继节点
+			free(q);		// 释放q指针内存空间
+		}
+	}
+	r->next = NULL;		// 循环结束，将r的后继指向NULL
+}
+
+
+
+// 链表：3.反向输出链表
+
+void R_Print(LinkList L)		// 形参：单链表头结点
+{
+	if(L->next != NULL)		// 判断当前节点的后继是否为空
+		R_Print(L->next);	// 递归调用自身，传入下一个节点指针
+	if(L != NULL) print(L->data);	// 前驱节点不为空，则输出data域
+}
+// 算法入口，用于跳过头结点
+void R_Ignore_Head(LinkList L)	
+{
+	if(L->next != NULL)R_Print(L->next);
+}
+
+
+
+// 链表：4.删除最小值节点
+
+LinkList Del_Min(LinkList &L)	// 形参：单链表头结点
+{
+	LNode *p = L->next, *pre = L;		// 声明p：第一个节点指针，pre：p的前驱指针
+	LNode *minpre = pre, minp = p;	// 声明minp：最小data域的指针，minpre：minp的前驱
+	while(p != NULL)		// 当p节点不为空，进入循环
+	{
+		if(p->data < minp->data)    // 如果p指针的data域小于minp
+		{
+			minp = p;		// 更新minp指针，将其指向p
+			minpre = pre;	// minpre指针指向pre。
+		}
+		// 若p的data域不小于minp，则p和pre同时后移
+		pre = p;		
+		p = p->next;
+	}
+	// 将minpre的后继指向minp的后继，并回收minp指针的内存空间，最后返回头结点L
+	minpre->next = minp->next;		
+	free(minp);
+	return L;
+}
+
+
+
+// 链表：5.就地逆置单链表
+
+// 解法1：头插法
+LinkList Reverse_1(LinkList L)		// 形参：单链表头结点
+{
+	LNode *p, *r;		// 声明p：第一个节点，r：临时指针
+	p = L->next;
+	while(p != NULL)		// 当p不为空时，进入循环
+	{
+		r = p->next;	// r指向p的后继节点
+		p->next = L->next	// p的后继指向，头结点L的后继
+		L->next = p;	// 头结点L的后继指向p
+		p = r;		// p移到r
+	}
+	return L;			// 返回头结点L
+}
+
+// 解法2：逆向尾插法
+LinkList Reverse_2(LinkList L)		// 形参：单链表的头节点
+{
+	LNode *pre, *p = L->next, *r = p->next;	// 声明pre：临时指针，p第一个节点，r：p节点的后继
+	p->next = NULL;		// 将p断链
+	while(r != NULL)		// 当r不为空时，进入循环
+	{
+		pre = p;		// pre指向p
+		p = r;		// p移到r
+		r = r->next;	// r移到r的后继
+		p->next = pre;	// p的后继指向pre
+	}
+	L->next = p;		// 循环结束，将头结点L的后继指向p
+	return L;			// 返回头结点L
+}
+
+
+
+// 链表：6.递增排序单链表
+void Asending_Sort(LinkList &L)	// 形参：单聊表头结点
+{
+	LNode *p = L->next, *r = p->next, *pre;	// 声明p：第一个节点，r：p的后继节点，pre：头结点。
+	p->next = NULL;	// 初始化p的后继为空（断链）
+	p = r;		// p移向r
+	while(p != NULL)	// 当p不为空时。
+	{
+		r = p->next;	// r 为当前p的后继
+		pre = L;		// pre为头结点
+		// 当pre的后继不为空，且pre的后继data域小于p的data域
+		while(pre->next != NULL && pre->next->data < p->data)
+		{
+			pre = pre->next;	// 将pre移到最后一个节点
+		}
+		// 将当前p节点连接到pre节点之后，并将p返回到r
+		p->next = pre->next;	
+		pre->next = p;
+		p = r;
+	}
+}
+
+
+
+// 链表：7.删除节点值介于S和T之间的所有元素
+
+void RangeDelete(LinkList &L, int s, int t)		// 形参：单链表头结点，S,T
+{
+	LNode *p = L->next, *pre = L;	// 声明p：第一个节点，pre：p的前驱
+	while(p != NULL)	// 当p不为空时，进入循环
+	{
+		if(p->data > s && p->data < t)    // 当前节点的data域介于s和t之间时，删除该节点
+		{
+			pre->next = p->next;
+			free(p);
+			p = pre->next;
+		}
+		else		// 否则p和pre同时后移
+		{
+			pre = p;
+			p = p->next;
+		}
+	}
+}
+
+
+
+// 链表：8.找出公共链表
+LinkList Common_Node(LinkList L1, LinkList L2)   // 形参：表1头结点，表2头结点
+{
+	int len1, len2, dist;		// 声明len1：表1长度，len2：表2长度，dist：两表的长度差
+	LinkList shortLen, longLen;	// 声明shortlen：较短链表头结点，longlen：较长链表头结点。
+	len1 = Length(L1);		// 计算表长
+	len2 = Length(L2);
+	if(len1 > len2)		// 当len1和len2不相等时，进行shortlen和longlen的链接，确保shortlen链接较短链表，longlen链接较长链表。
+	{
+		longLen = L1->next;
+		shortLen = L2->next;
+		dist = len1 - len2;
+	}
+	else
+	{
+		longLen = L2->next;
+		shortLen = L1->next;
+		dist = len2 - len1;
+	}
+	while(dist--)		// 若dist不为空，则调整较长链表，使其剩余长度和较短链表相等。
+	{
+		longLen = longLen->next;
+	}
+	while(longLen != NULL)	// 当longlen不为空时，进入循环。
+	{
+		if(longLen == shortLen)	// 若shortlen和longlen相等，则表示找到公共节点，返回该节点。
+			return longLen;
+		else			// 反之则两个指针同时后移
+		{
+			longLen = longLen->next;
+			shortLen = shortLen->next
+		}
+	}
+	return NULL；// 若循环完毕，没有返回值，表明两个链表没有公共节点
+}
+
+
+// 链表：9.增序输出单链表
+void Ascending_Out(LinkList &head)	// 形参：单链表头结点
+{
+	while(head->next != NULL)	// 若第一个节点不为空，进入第一层循环
+	{
+		LNode *p = head->next, *pre = head, *u;// 声明变量p：第一个节点，pre：p的前驱，u：临时指针。
+		pre->next = NULL;	// pre的后继置空（断链）
+		while(p->next != NULL)	// 若p的后继不为空，进入二层循环。
+		{
+			// 判断p的后继节点的data域，若小于pre的后继节点，则将pre移到p
+			if(p->next->data < pre->next->data)
+				pre = p;
+			p = p->next;	// p向后移
+		}
+
+		print(p->next->data);	// 输出该节点
+		// 回收该节点内存空间
+		u = pre->next;		
+		pre->next = u->next;
+		free(u);
+	}
+	free(head);	// 回收头结点
+}
+
+
+
+// 链表：10.分解链表奇偶下标元素
+
+LinkList DisCreat_1(LinkList &A)	// 形参：单链表头结点
+{
+	int i = 0;			// 下标记录。
+	LinkList B = new LNode;	// 申请内存空间，保存偶下标元素
+	B->next = NULL;		// 初始化B。
+	LNode *ra = A, *rb = B, *p;	// 申明ra：A链表头结点，rb：B链表头结点，p：工作指针
+	p = A->next;		// p为A链表第一个节点。
+	A->next = NULL;		// 将A的后继置空（断链）
+	while(p!= NULL)		// 当p不为空时，进入循环
+	{
+		i++;		// i++
+		if(i % 2 == 0)	// 判断为偶下标
+		{
+			rb->next = p;	// rb后继指向p，并将rb移到p
+			rb = p;
+		}
+		else		// 判断为奇下标
+		{
+			ra->next = p;	// ra后继指向p，并将ra移到p
+			ra = p;
+		}
+		p = p->next;		// p向后移动
+	}
+	// 因为是尾插法，最后将ra和rb的后继置空
+	ra->next = NULL;
+	rb->next = NULL;
+	return B;	// 返回B链表头结点
+}
+
+
+
+// 链表：11.拆分链表
+LinkList DisCreat_2(LinkList &A)	// 形参：单链表头结点
+{
+	LinkList B = new LNode;	// 声明B，保存拆分元素
+	B->next = NULL;		// B的后继置空
+	LNode *p = A->next, *q;	// p：A的第一个节点，q：临时指针
+	LNode *ra = A;		// ra：A的头结点
+	while(p != NULL)		// 当p不为空，进入循环
+	{
+		ra->next = p; ra = p;	// ra的后继指向p，并将ra移到p
+		p = p->next;	// p后移
+		if(p != NULL)	// 当p不为空，拆分当前节点
+		{
+			q = p->next;	// q记录当前p的后继
+			p->next = B->next;	// p的后继指向B的后继
+			B->next = p;	// B的后继指向p
+			p = q;		// p返回原节点的后继
+		}
+	}
+	ra->next = NULL;	// 因为采用头插法，所以只用对ra进行后继置空
+	return B;		// 返回B链表头结点（因为对A是引用，所以A在修改完毕之后，可以直接调用。）
+}
+
+
+
+// 链表：12.删除重复元素
+void Del_Same(LinkList &L)		// 形参：单链表头结点
+{
+	LNode *p = L->next, *q;	// p：第一个节点，q：临时指针
+	if(p == NULL)		// 判断单链表是否合法
+		return;
+	while(p->next != NULL)	// 当p的后继不为空时
+	{
+		q = p->next;	// q为当前p的后继
+		if(p->data == q->data)	// 如果p的后继data域等于q的data域，则将p的后继指向q的后继，并回收q
+		{
+			p->next = q->next;
+			free(q);
+		}
+		else	// p后移
+			p = p->next;
+	}
+}
+
+
+// 链表：13.归并两个链表
+void MergeList(LinkList &La, LinkList &Lb)	// 形参：La和Lb链表头结点，
+{
+	// r：临时指针，pa：La的第一个节点，pb：Lb的第一个节点。
+	LNode *r, *pa = La->next, *pb = Lb->next;
+	La->next = NULL;	// 将La的后继置空（断链）
+	
+	while(pa && pb)	// 当pa和pb不为空，进入循环
+	{
+		if(pa->data <= pb->data)	// 如果pa的data域小于pb的data域，将pa链接到La
+		{
+			r = pa->next;	// r记录pa当前的后继
+			pa->next = La->next;// pa的后继指向La的后继
+			La->next = pa;	// La的后继指向pa
+			pa = r;		// pa移到r
+		}
+		else	// 反之链接pb
+		{
+			r = pb->next;
+			pb->next = La->next;
+			La->next = pb;
+			pb = r;
+		}
+	}
+	if(pa)		// pb指向长度超过公共长度的链表
+		pb = pa;
+	while(pb)		// 当pb不为空时，进行剩余节点的单独链接
+	{
+		r = pb->next;
+		pb->next = La->next;
+		La->next = pb;
+		pb = r;
+	}
+	free(Lb);		// 会后Lb链表内存
+}
+
+
+
+// 链表：14.用公共节点创建链表
+void Get_Common(LinkList A, LinkList B)		// 形参：A/B链表头结点
+{
+	// p：A的第一个节点，q：B的第一个节点，r：新表头结点，s：临时指针
+	LNode *p = A->next, *q = B->next, *r, *s;
+	LinkList C = new LNode;	// 申请新表空间。
+	r = C;			
+	while(p != NULL && q != NULL)	// 当q和p不为空，进入循环
+	{
+		// 当q和p的data域不想等时，后移q或p
+		if(p->data < q->data)	
+			p = p->next;
+		else if(p->data > q->data)
+			q = q->next;
+
+		else	// data域相等节点，链接到B
+		{
+			s = new LNode;	// 申请内存空间，并用s指向
+			s->data = p->data;	// s的data域保存p的data域
+			r->next = s;	// r的后继指向s
+			r = s;		// r移到s
+
+			// p和q同时后移
+			p = p->next;	
+			q = q->next;
+		}
+	}
+}
+
+
+
+// 链表：15.创建交集链表
+LinkList Union(LinkList &la, LinkList &lb)		// 形参：la和lb的头结点
+{
+	LNode *pa = la->next;		// pa：la的第一个节点
+	LNode *pb = lb->next;		// pb：lb的第一个节点
+	LNode *u, *pc = la;		// u：临时指针，pc：la的头结点
+	while(pa && pb)		// 当pa和pb不为空时，进入循环
+	{
+		if(pa->data == pb->data)	// pa的data域和pb的data域相等时，将pa链接到pc
+		{
+			pc->next = pa;	// pc的后继指向pa
+			pc = pa;		// pc移到pa
+			pa = pa->next;	// pa移向后继
+			u = pb;		// u指向pb
+			pb = pb->next;	// pb移向后继
+			free(u);		// 回收u
+		}
+		else if(pa->data < pb->data)	// pa的data域小于pb
+		{
+			u = pa;		// u 指向pa
+			pa = pa->next;	// pa移向后继
+			free(u);		// 回收u
+		}
+		else			// pa的data域大于pb
+		{
+			u = pb;		// u指向pb
+			pb = pb->next;	// pb移向后继
+			free(u);		// 回收u
+		}
+	}
+	while(pa)			// 当pa还有剩余空间，回收剩余空间
+	{
+		u = pa;		
+		pa = pa->next;
+		free(u);
+	}
+	while(pb)			// 当pb还有剩余空间，回收剩余空间
+	{
+		u = pb;
+		pb = pb->next;
+		free(u);
+	}
+}
